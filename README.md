@@ -4,7 +4,7 @@
 [![Solana](https://img.shields.io/badge/solana-mainnet--beta-success)](https://solana.com)
 [![Anchor](https://img.shields.io/badge/anchor-0.29.0-blue)](https://book.anchor-lang.com)
 
-A mid-level Solana smart contract written in **Rust + Anchor** that simulates weighted AMM pools and routing logic. It includes:
+A capital-efficient DEX protocol on Solana featuring weighted AMM pools and SPL-token-powered on-chain routing. It includes:
 
 - Weighted constant-product swap logic (Balancer-style)
 - Real **SPL token integration** via **CPI**
