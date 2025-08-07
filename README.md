@@ -1,4 +1,4 @@
-# ⚡️ Solana DEX Router
+# ⚡️ Solana DEX Protocol
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Solana](https://img.shields.io/badge/solana-mainnet--beta-success)](https://solana.com)
