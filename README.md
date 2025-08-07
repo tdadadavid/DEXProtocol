@@ -1,6 +1,5 @@
 # ⚡️ Solana DEX Router
 
-
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Solana](https://img.shields.io/badge/solana-mainnet--beta-success)](https://solana.com)
 [![Anchor](https://img.shields.io/badge/anchor-0.29.0-blue)](https://book.anchor-lang.com)
@@ -48,15 +47,16 @@ This protocol simulates the routing engine of a DEX aggregator like **Jupiter** 
 
 ```
 ├── programs/
-│ └── dex_router_simulator/
+│ └── dex_router/
 │ ├── src/
 │ │ ├── lib.rs # Anchor entrypoint
 │ │ ├── context.rs # Account constraints
+│ │ ├── errors.rs # Errors
 │ │ ├── state.rs # Pool struct and constants
 │ │ ├── processor.rs # Instruction logic
 │ │ └── math.rs # Fixed-point weighted pool math
 ├── tests/
-│ └── router.ts # Minting, pool init, weighted swap
+│ └── dexrouter.ts # Minting, pool init, weighted swap
 ├── Anchor.toml
 ├── Cargo.toml
 └── README.md
@@ -68,8 +68,8 @@ This protocol simulates the routing engine of a DEX aggregator like **Jupiter** 
 
 ```bash
 # Clone the repo
-git clone https://github.com/tdadadavid/dex-router.git
-cd dex-router
+git clone https://github.com/tdadadavid/DEXRouter.git
+cd DEXRouter
 
 # Install dependencies
 anchor build
