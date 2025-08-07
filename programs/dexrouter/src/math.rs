@@ -1,5 +1,5 @@
+use crate::errors::ErrorCode;
 use anchor_lang::prelude::*;
-use crate::{errors::ErrorCode};
 
 pub const SCALE: u128 = 1_000_000_000_000_000_000;
 
@@ -13,10 +13,9 @@ pub fn get_output_amount(x: u64, y: u64, dx: u64) -> Result<u64> {
     let k = x.checked_mul(y).ok_or(ErrorCode::Overflow)?;
     let new_x = x.checked_add(dx).ok_or(ErrorCode::Overflow)?;
     let new_y = k.checked_div(new_x).ok_or(ErrorCode::DivideByZero)?;
-    let dy  = y.checked_sub(new_y).ok_or(ErrorCode::Overflow)?;
+    let dy = y.checked_sub(new_y).ok_or(ErrorCode::Overflow)?;
     Ok(dy)
 }
-
 
 /// Formula
 /// amountOut = y * (1-(x/x+amountIn)^(wx/wy))
@@ -28,43 +27,40 @@ pub fn get_output_amount(x: u64, y: u64, dx: u64) -> Result<u64> {
 ///   wy = weight of token_b
 ///
 pub fn get_weighted_amount(
-  token_in_balance: u128,
-  token_out_balance: u128,
-  weight_a: u128,
-  weight_b: u128,
-  amount_in: u128
+    token_in_balance: u128,
+    token_out_balance: u128,
+    weight_a: u128,
+    weight_b: u128,
+    amount_in: u128,
 ) -> Result<u64> {
-  // 1. Validations
-  if amount_in == 0 || token_in_balance == 0 || token_out_balance == 0 {
-    return Ok(0);
-  }
+    // 1. Validations
+    if amount_in == 0 || token_in_balance == 0 || token_out_balance == 0 {
+        return Ok(0);
+    }
 
-  // Base (x/x + amountIn)
-  let base = token_in_balance
-    .checked_div(
-      token_in_balance + amount_in
-    )
-    .ok_or(ErrorCode::DivideByZero)?;
+    // Base (x/x + amountIn)
+    let base = token_in_balance
+        .checked_div(token_in_balance + amount_in)
+        .ok_or(ErrorCode::DivideByZero)?;
 
-  // Exponent (wx/wy)
-  let exponent = weight_a
-    .checked_div(weight_b)
-    .ok_or(ErrorCode::DivideByZero)?;
+    // Exponent (wx/wy)
+    let exponent = weight_a
+        .checked_div(weight_b)
+        .ok_or(ErrorCode::DivideByZero)?;
 
-  // base ^ exponent
-  let power = pow_fixed(base, exponent)?;
+    // base ^ exponent
+    let power = pow_fixed(base, exponent)?;
 
-  // 1 - (base ^ exponent)
-  let multiplier = SCALE.checked_sub(power).ok_or(ErrorCode::Overflow)?;
+    // 1 - (base ^ exponent)
+    let multiplier = SCALE.checked_sub(power).ok_or(ErrorCode::Overflow)?;
 
-  // amount_out = token_out_balance * multiplier
-  let amount_out = (token_out_balance * multiplier)
-    .checked_div(SCALE)
-    .ok_or(ErrorCode::Overflow)?;
+    // amount_out = token_out_balance * multiplier
+    let amount_out = (token_out_balance * multiplier)
+        .checked_div(SCALE)
+        .ok_or(ErrorCode::Overflow)?;
 
-  Ok(amount_out as u64)
+    Ok(amount_out as u64)
 }
-
 
 pub fn pow_fixed(base: u128, exp: u128) -> Result<u128> {
     if base == 0 {

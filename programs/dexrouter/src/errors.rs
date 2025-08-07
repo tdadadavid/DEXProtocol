@@ -9,5 +9,5 @@ pub enum ErrorCode {
     DivideByZero,
 
     #[msg("invalid input provided")]
-    InvalidInput
+    InvalidInput,
 }

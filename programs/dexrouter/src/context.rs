@@ -1,8 +1,6 @@
-use anchor_lang::prelude::*;
-use anchor_spl::{
-  token::{Mint, Token,TokenAccount}
-};
 use crate::state::*;
+use anchor_lang::prelude::{borsh::de, *};
+use anchor_spl::token::{Mint, Token, TokenAccount};
 
 #[derive(Accounts)]
 pub struct InitializePool<'info> {
@@ -58,8 +56,7 @@ pub struct InitializePool<'info> {
 
 #[derive(Accounts)]
 pub struct SwapWeighted<'info> {
-
-  #[account(
+    #[account(
     mut,
     seeds = [
       b"pool",
@@ -68,41 +65,45 @@ pub struct SwapWeighted<'info> {
     ],
     bump = pool.bump,  
   )]
-  pub pool: Account<'info, Pool>,
+    pub pool: Account<'info, Pool>,
 
-  /// The vault holding the actual tokens of `token_a`
-  #[account(
+    /// The vault holding the actual tokens of `token_a`
+    #[account(
       mut,
       constraint = vault_a.owner == pool_signer.key(),
     )]
-  pub vault_a: Account<'info, TokenAccount>,
+    pub vault_a: Account<'info, TokenAccount>,
 
-  /// The vault holding the actual tokens of `token_b`
-  #[account(
+    /// The vault holding the actual tokens of `token_b`
+    #[account(
     mut,
     constraint = vault_b.owner == pool_signer.key()
   )]
-  pub vault_b: Account<'info, TokenAccount>,
+    pub vault_b: Account<'info, TokenAccount>,
 
-  /// CHECK: Used as signer
-  #[account(
+    /// CHECK: Used as signer
+    #[account(
     seeds = [b"pool_signer"],
     bump,
   )]
-  pub pool_signer: UncheckedAccount<'info>,
+    pub pool_signer: UncheckedAccount<'info>,
 
-  /// The user token A program the PDA would interact with.
-  #[account(mut)]
-  pub user_token_a: Account<'info, TokenAccount>,
+    /// The user token A program the PDA would interact with.
+    #[account(mut)]
+    pub user_token_a: Account<'info, TokenAccount>,
 
-  /// The user token B program the PDA would with.
-  #[account(mut)]
-  pub user_token_b: Account<'info, TokenAccount>,
+    /// The user token B program the PDA would with.
+    #[account(mut)]
+    pub user_token_b: Account<'info, TokenAccount>,
 
-  #[account(mut)]
-  pub user: Signer<'info>,
+    #[account(mut)]
+    pub user: Signer<'info>,
 
-  pub token_program: Program<'info, Token>,
+    pub token_program: Program<'info, Token>,
 }
 
-
+#[derive(Accounts)]
+pub struct MultiRouteSwap<'info> {
+    pub user: Signer<'info>,
+    pub token_program: Program<'info, Token>,
+}

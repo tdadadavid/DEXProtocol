@@ -2,6 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import {Program, web3} from "@coral-xyz/anchor";
 import { Dexrouter } from "../target/types/dexrouter";
 import {
+    Account,
 	createMint,
 	getOrCreateAssociatedTokenAccount,
 	mintTo,
@@ -17,9 +18,9 @@ describe("dexrouter", () => {
 
 	let mintA: anchor.web3.PublicKey;
 	let mintB: anchor.web3.PublicKey;
-	let userAtaA, userAtaB;
-	let vaultA, vaultB;
-	let poolSigner, poolPDA;
+	let userAtaA: Account, userAtaB: Account;
+	let vaultA: anchor.web3.Signer | anchor.web3.Keypair, vaultB: anchor.web3.Signer | anchor.web3.Keypair;
+	let poolSigner: anchor.web3.PublicKey, poolPDA: anchor.web3.PublicKey;
 
 	it("Initializes pools and performs weighted swap", async () => {
 		const payer = provider.wallet;

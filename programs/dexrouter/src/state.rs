@@ -13,5 +13,5 @@ pub struct Pool {
 
 impl Pool {
     /// 4 PublicKey.
-    pub const LEN: usize = (32 * 4) + (8*2) + 4;
+    pub const LEN: usize = (32 * 4) + (8 * 2) + 4;
 }
