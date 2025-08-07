@@ -1,65 +1,110 @@
 import * as anchor from "@coral-xyz/anchor";
 import {Program, web3} from "@coral-xyz/anchor";
 import { Dexrouter } from "../target/types/dexrouter";
+import {
+	createMint,
+	getOrCreateAssociatedTokenAccount,
+	mintTo,
+	TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 
 describe("dexrouter", () => {
-  // Configure the client to use the local cluster.
-  anchor.setProvider(anchor.AnchorProvider.env());
+	const provider = anchor.AnchorProvider.env();
+	// Configure the client to use the local cluster.
+	anchor.setProvider(provider);
 
-  const program = anchor.workspace.dexrouter as Program<Dexrouter>;
+	const program = anchor.workspace.dexrouter as Program<Dexrouter>;
 
-  // let mintA: anchor.web3.PublicKey;
-  // let mintB: anchor.web3.PublicKey;
-  //
-  // let userAtaA, userAtaB;
-  // let vaultA, vaultB;
-  // let poolSigner, poolPDA;
+	let mintA: anchor.web3.PublicKey;
+	let mintB: anchor.web3.PublicKey;
+	let userAtaA, userAtaB;
+	let vaultA, vaultB;
+	let poolSigner, poolPDA;
 
-  it('Initializes pools and performs routed swap', async () => {
-    let user = anchor.getProvider().publicKey;
-    let poolA = anchor.web3.Keypair.generate();
-    let poolB = anchor.web3.Keypair.generate();
+	it("Initializes pools and performs weighted swap", async () => {
+		const payer = provider.wallet;
+		const connection = provider.connection;
 
-    const lamports = await program.provider.connection.getMinimumBalanceForRentExemption(16);
+		mintA = await createMint(connection, payer.payer, payer.publicKey, null, 6);
+		mintB = await createMint(connection, payer.payer, payer.publicKey, null, 6);
 
-    await program.methods.initialize(new anchor.BN(10), new anchor.BN(10))
-        .accounts({
-          pool: poolA.publicKey,
-          payer: user,
-        })
-        .signers([poolA])
-        .rpc()
+		userAtaA = await getOrCreateAssociatedTokenAccount(
+			connection,
+			payer.payer,
+			mintA,
+			payer.publicKey
+		);
+		userAtaB = await getOrCreateAssociatedTokenAccount(
+			connection,
+			payer.payer,
+			mintB,
+			payer.publicKey
+		);
 
-    await program.methods.initialize(new anchor.BN(1000), new anchor.BN(1000))
-        .accounts({
-          pool: poolB.publicKey,
-          payer: user,
-        })
-        .signers([poolB])
-        .rpc()
+		await mintTo(
+			connection,
+			payer.payer,
+			mintA,
+			userAtaA.address,
+			payer.payer,
+			1_000_000
+		);
+		await mintTo(
+			connection,
+			payer.payer,
+			mintB,
+			userAtaB.address,
+			payer.payer,
+			1_000_000
+		);
 
-    await program.methods.routeSwap(new anchor.BN(1000))
-        .accounts({
-          poolA: poolA.publicKey,
-          poolB: poolB.publicKey,
-          user,
-        })
-        .rpc()
-  });
+		const [pool] = anchor.web3.PublicKey.findProgramAddressSync(
+			[Buffer.from("pool"), mintA.toBuffer(), mintB.toBuffer()],
+			program.programId
+		);
 
+		poolPDA = pool;
 
-  it("Is initialized!", async () => {
-    // Add your test here.
-    let user = anchor.getProvider().publicKey;
-    let poolA = anchor.web3.Keypair.generate();
+		const [signer] = anchor.web3.PublicKey.findProgramAddressSync(
+			[Buffer.from("pool_signer")],
+			program.programId
+		);
+		poolSigner = signer;
 
-    const tx = await program.methods.initialize(new anchor.BN(1000), new anchor.BN(1000))
-        .accounts({
-            pool: poolA.publicKey,
-            payer: user,
-        })
-        .signers([poolA])
-        .rpc();
-    console.log("Your transaction signature", tx);
-  });
+		vaultA = anchor.web3.Keypair.generate();
+		vaultB = anchor.web3.Keypair.generate();
+
+		await program.methods
+			.initializePool(new anchor.BN(10), new anchor.BN(10))
+      .accounts({
+        // @ts-ignore
+				pool,
+				mintA,
+				mintB,
+				vaultA: vaultA.publicKey,
+				vaultB: vaultB.publicKey,
+				payer: payer.publicKey,
+				poolSigner: poolSigner,
+				tokenProgram: TOKEN_PROGRAM_ID,
+				rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+				systemProgram: anchor.web3.SystemProgram.programId,
+			})
+			.signers([vaultA, vaultB])
+			.rpc();
+
+		await program.methods
+			.swapWeighted(new anchor.BN(1000))
+			.accounts({
+				// @ts-ignore
+				pool,
+				vaultA: vaultA.publicKey,
+				vaultB: vaultB.publicKey,
+				user: payer.publicKey,
+				userTokenA: userAtaA.address,
+				userTokenB: userAtaB.address,
+				poolSigner: poolSigner,
+				tokenProgram: TOKEN_PROGRAM_ID,
+			})
+			.rpc();
+	});
 });

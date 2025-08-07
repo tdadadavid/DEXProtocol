@@ -4,9 +4,8 @@ pub mod processor;
 pub mod math;
 
 use anchor_lang::prelude::*;
-
 use context::*;
-use processor::*;
+use processor::{initialize_pool_handler, swap_weighted_handler};
 
 declare_id!("4vMwWget8jXVv4LGREx6XBDTs7ZuPhZpcxWcPiGu7jDS");
 
@@ -14,16 +13,11 @@ declare_id!("4vMwWget8jXVv4LGREx6XBDTs7ZuPhZpcxWcPiGu7jDS");
 pub mod dexrouter {
     use super::*;
 
-    pub fn initialize(ctx: Context<InitializePool>, token_a_amount: u64, token_b_amount: u64) -> Result<()> {
-        initialize_pool_handler(ctx, token_a_amount, token_b_amount)
+    pub fn initialize_pool(ctx: Context<InitializePool>, weight_a: u64, weight_b: u64) -> Result<()> {
+        initialize_pool_handler(ctx, weight_a, weight_b)
     }
 
-
-    pub fn swap(ctx: Context<Swap>, amount_in: u64) -> Result<()> {
-        swap_handler(ctx, amount_in)
-    }
-
-    pub fn route_swap(ctx: Context<RouteSwap>, amount_in: u64) -> Result<()> {
-        route_swap_handler(ctx, amount_in)
+    pub fn swap_weighted(ctx: Context<SwapWeighted>, amount_in: u64) -> Result<()> {
+      swap_weighted_handler(ctx, amount_in)
     }
 }
