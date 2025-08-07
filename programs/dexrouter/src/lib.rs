@@ -2,6 +2,7 @@ pub mod context;
 pub mod state;
 pub mod processor;
 pub mod math;
+pub mod errors;
 
 use anchor_lang::prelude::*;
 use context::*;

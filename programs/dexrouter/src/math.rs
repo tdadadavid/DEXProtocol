@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use crate::{errors::ErrorCode};
 
 pub const SCALE: u128 = 1_000_000_000_000_000_000;
 
@@ -106,16 +107,4 @@ pub fn pow_fixed(base: u128, exp: u128) -> Result<u128> {
     }
 
     Ok(result)
-}
-
-#[error_code]
-pub enum ErrorCode {
-    #[msg("overflow during math calculation")]
-    Overflow,
-
-    #[msg("Divide by zero error")]
-    DivideByZero,
-
-    #[msg("invalid input provided")]
-    InvalidInput
 }
