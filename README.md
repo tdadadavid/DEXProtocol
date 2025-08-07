@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Solana](https://img.shields.io/badge/solana-mainnet--beta-success)](https://solana.com)
-[![Anchor](https://img.shields.io/badge/anchor-0.29.0-blue)](https://book.anchor-lang.com)
+[![Anchor](https://img.shields.io/badge/anchor-0.31.1-blue)](https://book.anchor-lang.com)
 
 A capital-efficient DEX protocol on Solana featuring weighted AMM pools and SPL-token-powered on-chain routing. It includes:
 
