@@ -23,7 +23,8 @@ pub mod dexrouter {
     }
 
     pub fn swap_weighted(ctx: Context<SwapWeighted>, amount_in: u64) -> Result<()> {
-        swap_weighted_handler(ctx, amount_in, false)
+      // direction hardcoded for now
+      swap_weighted_handler(ctx, amount_in, false) 
     }
 
     pub fn multi_route_swap(ctx: Context<MultiRouteSwap>, amount_in: u64) -> Result<()> {

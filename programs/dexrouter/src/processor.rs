@@ -29,7 +29,6 @@ pub fn initialize_pool_handler(
     Ok(())
 }
 
-///
 /// 
 /// `token_a_to_b`: flag indicating the transfer direction wether A -> B (true) or B -> A (false)
 /// 
@@ -111,6 +110,10 @@ pub fn swap_weighted_handler(
     Ok(())
 }
 
+pub fn mutil_route_swap(ctx: Context<MultiRouteSwap>, amount_in: u64) -> Result<()> {
+    Ok(())
+}
+
 /// Helper method to send token from program's vault to user's account
 fn transfer_from_vault_to_user_account<'info>(
   vault_b: &Account<'info, TokenAccount>,
@@ -123,14 +126,14 @@ fn transfer_from_vault_to_user_account<'info>(
   let signer_seeds: &[&[u8]] = &[b"pool_signer", &[bumps_pool_signer]];
 
   let cpi_accounts = Transfer {
-      from: vault_b.to_account_info(),
-      to: user_token.to_account_info(),
-      authority: pool_signer.to_account_info(),
+    from: vault_b.to_account_info(),
+    to: user_token.to_account_info(),
+    authority: pool_signer.to_account_info(),
   };
   let cpi_program = token_program.to_account_info();
   let _ = token::transfer(
-      CpiContext::new_with_signer(cpi_program.clone(), cpi_accounts, &[signer_seeds]),
-      amount_out,
+    CpiContext::new_with_signer(cpi_program.clone(), cpi_accounts, &[signer_seeds]),
+    amount_out,
   );
   Ok(())
 }
@@ -144,18 +147,14 @@ fn transfer_from_user_to_vault_account<'info>(
   amount_in: u64
 ) -> Result<()> {
   let cpi_accounts = Transfer {
-        from: user_token.to_account_info(),
-        to: vault_a.to_account_info(),
-        authority: user.to_account_info(),
-    };
-    let cpi_program = token_program.to_account_info();
-    let _ = token::transfer(
-        CpiContext::new(cpi_program.clone(), cpi_accounts),
-        amount_in,
-    );
+    from: user_token.to_account_info(),
+    to: vault_a.to_account_info(),
+    authority: user.to_account_info(),
+  };
+  let cpi_program = token_program.to_account_info();
+  let _ = token::transfer(
+    CpiContext::new(cpi_program.clone(), cpi_accounts),
+    amount_in,
+  );
   Ok(())
 }
-
-// pub fn mutil_route_swap(ctx: Context<MultiRouteSwap>, amount_in: u64) -> Result<()> {
-//     Ok(())
-// }
