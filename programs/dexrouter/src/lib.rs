@@ -6,7 +6,7 @@ pub mod state;
 
 use anchor_lang::prelude::*;
 use context::*;
-use processor::{initialize_pool_handler, swap_weighted_handler};
+use processor::{initialize_pool_handler, swap_weighted_handler, mutil_route_swap};
 
 declare_id!("4vMwWget8jXVv4LGREx6XBDTs7ZuPhZpcxWcPiGu7jDS");
 
@@ -28,6 +28,6 @@ pub mod dexrouter {
     }
 
     pub fn multi_route_swap(ctx: Context<MultiRouteSwap>, amount_in: u64) -> Result<()> {
-        Ok(())
+        mutil_route_swap(ctx, amount_in)
     }
 }

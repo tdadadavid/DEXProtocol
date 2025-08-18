@@ -111,22 +111,23 @@ pub fn swap_weighted_handler(
 }
 
 pub fn mutil_route_swap(ctx: Context<MultiRouteSwap>, amount_in: u64) -> Result<()> {
-    Ok(())
+
+  Ok(())
 }
 
 /// Helper method to send token from program's vault to user's account
 fn transfer_from_vault_to_user_account<'info>(
-  vault_b: &Account<'info, TokenAccount>,
-  user_token: &Account<'info, TokenAccount>,
-  pool_signer: &UncheckedAccount<'info>,
-  token_program: &Program<'info, Token>,
-  bumps_pool_signer: u8,
-  amount_out: u64
+    vault: &Account<'info, TokenAccount>,
+    user_token: &Account<'info, TokenAccount>,
+    pool_signer: &UncheckedAccount<'info>,
+    token_program: &Program<'info, Token>,
+    bumps_pool_signer: u8,
+    amount_out: u64
 ) -> Result<()> {
   let signer_seeds: &[&[u8]] = &[b"pool_signer", &[bumps_pool_signer]];
 
   let cpi_accounts = Transfer {
-    from: vault_b.to_account_info(),
+    from: vault.to_account_info(),
     to: user_token.to_account_info(),
     authority: pool_signer.to_account_info(),
   };
@@ -140,15 +141,15 @@ fn transfer_from_vault_to_user_account<'info>(
 
 /// Helper method to send token from user's account to programs vault.
 fn transfer_from_user_to_vault_account<'info>(
-  user_token: &Account<'info, TokenAccount>, 
-  vault_a: &Account<'info, TokenAccount>, 
-  token_program: &Program<'info, Token>,
-  user: &Signer<'info>,
-  amount_in: u64
+    user_token: &Account<'info, TokenAccount>,
+    vault: &Account<'info, TokenAccount>,
+    token_program: &Program<'info, Token>,
+    user: &Signer<'info>,
+    amount_in: u64
 ) -> Result<()> {
   let cpi_accounts = Transfer {
     from: user_token.to_account_info(),
-    to: vault_a.to_account_info(),
+    to: vault.to_account_info(),
     authority: user.to_account_info(),
   };
   let cpi_program = token_program.to_account_info();
