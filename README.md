@@ -119,4 +119,4 @@ This project is inspired by the routing engines and pool math behind:
 
 - Balancer
 - Jupiter Aggregator
-- Stabble Protocol
+- [Stabble Protocol](https://drive.google.com/file/d/1w5FvSkhnWyHkHy7bvfz1IRrfpV247tkw/view)
